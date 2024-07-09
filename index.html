@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spotify - Let the Music Play</title>
+    <link rel="stylesheet" href="homestyle.css">
+</head>
+<body>
+    <nav>
+        <ul>
+            <li class="brand">
+                <img src="logo.png" alt="Spotify" style="height: 40px; vertical-align: middle;"> 
+                <span style="font-size: 24px; vertical-align: middle;">Spotify</span>
+            </li>
+            <li>Home</li>
+            <li>
+                <select id="songCategory" onchange="navigateToCategory()">
+                    <option value="" disabled selected>Choose a category</option>
+                    <option value="party.html">Party</option>
+                    <option value="romantic.html">Romantic</option>
+                    <option value="lofi.html">Lofi</option>
+                    <option value="sad.html">Sad</option>
+                </select>
+            </li>
+            <li class="login-signup"><a href="#" onclick="openModal()">Login/Signup</a></li>
+        </ul>
+    </nav>
+    <div class="container">
+        <div class="content">
+            <h1>Spotify</h1>
+            <h2>Let the Music Play</h2>
+        </div>
+    </div>
+
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div id="modal-body">
+                <h2 id="modal-title">Login</h2>
+                <form id="signup-form">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" name="username" required><br><br>
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required><br><br>
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required><br><br>
+                    <label for="confirm-password">Confirm Password:</label>
+                    <input type="password" id="confirm-password" name="confirm-password" required><br><br>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-signup">Signup</button>
+                        <button type="button" class="btn-switch" onclick="switchToLogin()">Login</button>
+                    </div>
+                </form>
+                <form id="login-form" style="display: none;">
+                    <label for="login-email">Email:</label>
+                    <input type="email" id="login-email" name="login-email" required><br><br>
+                    <label for="login-password">Password:</label>
+                    <input type="password" id="login-password" name="login-password" required><br><br>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-login">Login</button>
+                        <button type="button" class="btn-switch" onclick="switchToSignup()">Signup</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function to open the modal
+        function openModal() {
+            document.getElementById("myModal").style.display = "block";
+        }
+
+        // Function to close the modal
+        function closeModal() {
+            document.getElementById("myModal").style.display = "none";
+        }
+
+        // Function to switch to the login form
+        function switchToLogin() {
+            document.getElementById("signup-form").style.display = "none";
+            document.getElementById("login-form").style.display = "block";
+            document.getElementById("modal-title").innerText = "Login";
+        }
+
+        // Function to switch to the signup form
+        function switchToSignup() {
+            document.getElementById("signup-form").style.display = "block";
+            document.getElementById("login-form").style.display = "none";
+            document.getElementById("modal-title").innerText = "Signup";
+        }
+
+        // Function to navigate to the selected category page
+        function navigateToCategory() {
+            const categorySelect = document.getElementById('songCategory');
+            const selectedCategory = categorySelect.value;
+            if (selectedCategory) {
+                window.location.href = selectedCategory;
+            }
+        }
+
+        // Function to handle signup form submission
+        document.getElementById('signup-form').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent default form submission
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const response = await fetch('/auth/signup', { // Send a POST request to signup route
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, email, password })
+                });
+                const data = await response.json(); // Parse response JSON
+                alert(data.message); // Display response message
+                closeModal(); // Close modal if signup is successful
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error signing up. Please try again.');
+            }
+        });
+
+        // Function to handle login form submission
+        document.getElementById('login-form').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent default form submission
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            try {
+                const response = await fetch('/auth/login', { // Send a POST request to login route
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await response.json(); // Parse response JSON
+                alert(data.message); // Display response message
+                closeModal(); // Close modal if login is successful
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error logging in. Please try again.');
+            }
+        });
+    </script>
+</body>
+</html>
